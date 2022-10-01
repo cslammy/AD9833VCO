@@ -1,0 +1,28 @@
+octave zero
+
+4 columns
+
+***Voct
+num = num of new rows to insert between each existing entry
+adder = .0833/num
+put .0833 + (adder*rowoffset) into all rows
+
+
+***FREQ  << this is NOT linear  << there must be a function to generate this!!!
+x = higher # - lower #
+y = x/num
+lower # + y*rowoffset for first 12 rows
+
+for next 12 rows
+each row *2
+
+for next 12 rows
+previous 12 rows * 2
+
+BITS
+start at 0
+add 1 for each subsequent row
+
+FREQ
+unchanged--values must stay with original row
+ 

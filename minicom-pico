@@ -1,0 +1,3 @@
+#!/bin/bash
+# basic config settings to have USB to serial in Ubuntu minicom 
+sudo minicom -b 115200 -o -D /dev/ttyACM0
