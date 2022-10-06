@@ -4,6 +4,16 @@
 #include <stdint.h>
 #include <stdio.h>
 
+
+extern uint16_t AD9833_CNTL_SPI[1];  //global buffer for AD9833 control SPI writes
+extern uint16_t AD9833_FREQ_SPI[2];  //global buffer for AD9833 freq SPI writes
+extern uint16_t AD9833_PHASE_SPI[1]; //global buffer for AD9833 phase SPI writes
+extern uint16_t AD9833_init_data[6];  //initialize AD9833 buffer after resetstat
+
+#define READ_CNTL_BUFFER printf("0x%x",AD8933_CNTL_SPI[0])
+#define READ_FREQ_BUFFER printf("0x%x 0x%x",AD9833_FREQ_SPI[0],AD9833_FREQ_SPI[1])
+#define READ_PHASE_BUFFER printf("0x%x",AD8933_PHASE_SPI[0])
+
 #define CNTL_SEND SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1)
 #define FREQ_SEND SPI_TransferTx16_variable_num_words(spi0,AD9833_FREQ_SPI, 2)
 #define PHASE_SEND SPI_TransferTx16_variable_num_words(spi0,AD9833_PHASE_SPI, 1)
@@ -28,13 +38,7 @@ struct AD9833_C // struct for control data
 
 };
 
-
-//buffer global defs
-static uint16_t AD9833_CNTL_SPI[1];  //global buffer for AD9833 control SPI writes
-static uint16_t AD9833_FREQ_SPI[2];  //global buffer for AD9833 freq SPI writes
-static uint16_t AD9833_PHASE_SPI[1]; //global buffer for AD9833 phase SPI writes
-static uint16_t AD9833_init_data[6];  //initialize AD9833 buffer after resetstat
-
+ 
 void AD9833_powerup_reset(void);
 
 //initialize device sine wave, nominalfreq, phase=0

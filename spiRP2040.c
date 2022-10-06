@@ -36,7 +36,7 @@ uint8_t data8ret[1]; // bits for read return
 
 
     //set pins
-const uint cs_pin = 5;
+const uint cs_pin = 29;
 const uint sck_pin = 2;
 const uint mosi_pin = 3;
 const uint miso_pin = 4;
