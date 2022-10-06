@@ -36,7 +36,8 @@ uint8_t data8ret[1]; // bits for read return
 
 
     //set pins
-const uint cs_pin = 29;
+const uint cs_pin2 = 29; // use built in pin for dev board MCP3201
+const uint cs_pin = 6; // use this pin for AD9833 cs
 const uint sck_pin = 2;
 const uint mosi_pin = 3;
 const uint miso_pin = 4;
@@ -51,8 +52,11 @@ void init_spi_master(void)
 	 //use spi0
 	spi_inst_t *spi=spi0; 
 	gpio_init(cs_pin); 
+	gpio_init(cs_pin2);
 	gpio_set_dir(cs_pin, GPIO_OUT);  // set cs_pin to output
-    gpio_put(cs_pin,1); // set cs_pin initially to high
+    gpio_set_dir(cs_pin2, GPIO_OUT);  // set cs_pin to output
+	gpio_put(cs_pin,1); // set cs_pin initially to high
+    gpio_put(cs_pin2,1); // set cs_pin initially to high
     spi_init(spi,spi_speed);
 
 gpio_set_function(sck_pin, GPIO_FUNC_SPI);
@@ -178,6 +182,19 @@ uint16_t SPI_TransferTxRx16_SingleCS(spi_inst_t *spi, const uint16_t data_in) //
       spi_read16_blocking(spi,data_in, &data16ret, 1);
 	
 	  gpio_put (cs_pin,1);
+	  return data16ret;
+
+}
+
+uint16_t SPI_TransferTxRx16_SingleCS_CSpin2(spi_inst_t *spi, const uint16_t data_in) // cs low, 2 bytes to send to SPI IC, cs high) using cs_pin2
+{
+	  gpio_put (cs_pin2,0);
+	  
+      uint16_t data16ret = 0;
+      
+      spi_read16_blocking(spi,data_in, &data16ret, 1);
+	
+	  gpio_put (cs_pin2,1);
 	  return data16ret;
 
 }

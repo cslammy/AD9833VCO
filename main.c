@@ -10,6 +10,7 @@ uint16_t AD9833_init_data[6];  //initialize AD9833 buffer after resetstat
 #include "hex2bin.h"
 #include "spiRP2040.h"
 #include "UART.h"
+#include "MCP3201.h"
 
 /*
 IMPORTANT
@@ -20,6 +21,7 @@ Pico Dev board
 */
 
 
+
 const uint LED_PIN = 16; // green LED on SEEED2040
 
 
@@ -28,7 +30,7 @@ const uint LED_PIN = 16; // green LED on SEEED2040
 int main() 
 {
 
-
+uint16_t MCPvalue = 0;
 
 //initialize UART
 
@@ -41,7 +43,7 @@ gpio_set_dir(LED_PIN, GPIO_OUT);
 init_spi_master();
 sleep_ms(500);
 
-spi_mode(2);
+spi_mode(0);
 sleep_ms(1000);
 
 //initialize device--power up reset
@@ -63,7 +65,10 @@ sleep_ms(1000);
     READ_UART_BUFFER; 
     printf("%s\n",uart_buffer); 
     
-
+    MCPvalue = MCP3201read();
+    printf("value of MCP is %d \n",MCPvalue);
+    sleep_us (10);
+    
     //trap buffer....serial commands to present to AD9833 code
 /*
 set your PC to 8N1, no hw flow control, 115200 baud, no sw flow control

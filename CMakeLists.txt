@@ -19,7 +19,7 @@ pico_sdk_init()
 add_executable(${PROJECT_NAME}
 	#for instance:
 	#file1.c   file2.c  file3.c  all_your_dookies.c
-	main.c  hex2bin.c  ad9833.c spiRP2040.c UART.c
+	main.c  hex2bin.c  ad9833.c spiRP2040.c UART.c MCP3201.c
 	)
 
 #create extra uf2 etc files

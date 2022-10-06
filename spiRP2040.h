@@ -60,5 +60,10 @@ uint8_t SPI_TransferTxRx8(spi_inst_t *spi, uint8_t data8);
 //PARAMETERS: spi* is spi0 or spi1  data_in is 16 bits.  returns a single uint8_t
 uint16_t SPI_TransferTxRx16_SingleCS(spi_inst_t *spi, uint16_t data_in); 
 
+//send 16 bits to a SPI peripheral and receive 16 bits from peripheral--cs low, uint16_t, cs high);
+//reminder: set #define SPI_BITS to 16 in spiRP2040.c 
+//PARAMETERS: spi* is spi0 or spi1  data_in is 16 bits.  returns a single uint8_t
+//uses alternate CS_pin, "cs_pin2"
+uint16_t SPI_TransferTxRx16_SingleCS_CSpin2(spi_inst_t *spi, const uint16_t data_in);
 
 #endif /* SPI_H_ */
