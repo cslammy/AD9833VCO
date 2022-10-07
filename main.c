@@ -69,8 +69,10 @@ sleep_ms(1000);
     printf("value of MCP is %d \n",MCPvalue);
     sleep_us (10);
     
-    //trap buffer....serial commands to present to AD9833 code
+ 
 /*
+   //trap buffer....serial commands to present to AD9833 code
+
 set your PC to 8N1, no hw flow control, 115200 baud, no sw flow control
 enter your string below without quotes in the termianl program.
 the keywords will launch processes on the AD9833--see the results on a scope.
@@ -86,19 +88,13 @@ TRI  switch to triangle wave
 SQUARE ditto, square wave
 SINE  ditto, sine wave
 
-SQUAREHALF switch to square wave--1/2 frequency of chosen retister
-FSK uses FSELECT to quickly switch between freq in reg 0 and 1
-PHASE  simple phase mod test
-
-STAIR  sample and hold of triagle wave by freezing and unfreezing DAC
+ 
 F1  sanity check of freq0 register to output
 F2  sanity check of freq1 register to output
 
 FRQxxxxx loads freq reg0 with freq xxxxxx.  xxxxx must be 5 digits, so 100hz is 00100
 F1Qxxxxx ditto for freq reg1
-
-S0   select Freq req0 to output
-S1   select Freq reg1 to output
+ 
 REG  print out current freq, control, phase registers as seen by the PC
 
 MSB  increment F0 MSB only causing coarse frequency change
@@ -151,179 +147,7 @@ LSB  ditto for LSB, fine frequency change.
             CNTL_SEND;  
         }
 
-        if (UART_READ("SQUAREHALF")) //gen square wave, half freq
-        {
-            AD9833_Sine();
-            CNTL_SEND; 
-            AD9833_square_halffreq();
-            CNTL_SEND;   
-        }
-
  
-        if (UART_READ("LSB")) 
-        {
-        AD9833_freq0_to_output;
-        AD9833_Load_MSB_only;
-        CNTL_SEND;
-
-            for (uint32_t xx = 0; xx <= 4000; xx= xx + 100)
-            {
-                AD9833_freq_load(0,xx);
-                SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-                sleep_ms(300);
-            }
-        }
-        
-        
-        
-        if (UART_READ("MSB")) 
-        {
-        AD9833_freq0_to_output;
-        AD9833_Load_LSB_only;
-        CNTL_SEND;
-
-            for (uint32_t xx = 0; xx <= 4000000; xx = xx + 100000){
-                AD9833_freq_load(0,xx);
-                SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-                sleep_ms(300);
-            }
-        }
-
-        if (UART_READ("FSK")) //freq change by loading up freq1 and 0 regs then switching between them
-        
-        {
-
-            //load freq registers
-
-            AD9833_freq_load(0,12200);
-            SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-
-            AD9833_freq_load(1,1000);  
-            SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-
-            
-            
-            printf("Control reg before freq1 change  is: %x \n",AD9833_CNTL_SPI[0]);
-             
-
-            for (uint16_t i = 0; i<300; i++)
-            {
-            AD9833_freq1_to_output();
-             
-            
-            printf("Control reg after freq1 change  is: %x \n",AD9833_CNTL_SPI[0]); 
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1);
-            sleep_ms(10);
-            
-            AD9833_freq0_to_output();
-             
-            
-            printf("Control reg after freq1 change  is: %x \n",AD9833_CNTL_SPI[0]); 
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1);
-            sleep_ms(10);
-
-           
-
-            }
-        }
-
-                if (UART_READ("FSKLONG")) //freq change by loading up freq1 and 0 regs then switching between them
-        
-        {
-
-            /*SAME test as FSK but with 10x longer loop.  
-            /this is here to see if SPI in general is working
-            more time to probe pins
-            */
-
-            //load freq registers
-
-            AD9833_freq_load(0,12200);
-            SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-
-            AD9833_freq_load(1,1000);  
-            SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-
-            
-            
-            printf("Control reg before freq1 change  is: %x \n",AD9833_CNTL_SPI[0]);
-             
-
-            for (uint16_t i = 0; i<3000; i++)
-            {
-            AD9833_freq1_to_output();
-             
-            
-            printf("FSKLONG routine. Control reg after freq1 change  is: %x \n",AD9833_CNTL_SPI[0]); 
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1);
-            sleep_ms(10);
-            
-            AD9833_freq0_to_output();
-             
-            
-            printf("FRKLONG routine. Control reg after freq1 change  is: %x \n",AD9833_CNTL_SPI[0]); 
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1);
-            sleep_ms(10);
-
-           
-
-            }
-        }
-        if (UART_READ("PHASE")) //test phase stuff w phase modulation
-        //"works" but need an algo to accurately move phase.
-        {
-            AD9833_freq_load(0,100); //slow signal
-            SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-            AD9833_Sine();
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_CNTL_SPI, 1);
-            
-
-
-            //reg 1 phase 2 out
-            AD9833_phase(0,0);
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_PHASE_SPI, 1);
-            AD9833_phase(1,1000);
-            SPI_TransferTx16_variable_num_words(spi0,AD9833_PHASE_SPI, 1);
-            
-            
-
-
-            for (uint16_t i = 0; i < 20;i++)
-            {
-            AD9833_phase1_to_output();
-            CNTL_SEND;
-            printf("control reg 1 is: 0x%x \n",AD9833_CNTL_SPI[0]);
-
-            sleep_ms(500);
-            AD9833_phase0_to_output();
-            CNTL_SEND;
-            printf("control reg is: 0x%x \n",AD9833_CNTL_SPI[0]);
-            sleep_ms(500);
-            }
-            
-        }
-               
-        if (UART_READ("STAIR")) //test DAC on and off stuff
-        {
-           AD9833_freq0_to_output();
-            
-           AD9833_Tri();
-           CNTL_SEND;
-           AD9833_freq_load(0,60); //slow signal
-           SPI_TransferTx16_variable_num_words(spi0, AD9833_FREQ_SPI, 2);
-           for (uint16_t i = 1; i < 300; i++)
-           {
-            AD9833_DAC_freeze();
-            CNTL_SEND;
-            sleep_ms(10);
-            AD9833_DAC_unfreeze();
-            CNTL_SEND;
-            sleep_ms(10);
-           } 
-
-
-        }
-
         if (UART_READ("F1"))
         {
             AD9833_freq0_to_output();
@@ -375,16 +199,7 @@ LSB  ditto for LSB, fine frequency change.
             printf("phase reg value is: %x \n",AD9833_PHASE_SPI[0]);
             
         }
-
-        /*we capture FRQ to know we are testing frequency algo.
-        you must enter the FRQ you want to test followed 5 digits
-        E.G.:
-        FRQ01000    1K
-        FRQ00100    100hz
-        FRQ20000    20K   etc.
-        */
-
-        //load FRQ0 register. If cntl is set to favor F0 this will change output freq immediately
+         //load FRQ1 register with freq. value
         char f[4] = "FRQ"; // this has to be [+1] greater than # of chars--but why scotty why?
         
         if (compare_strings(uart_buffer,f,3)) // compare first 3 chars
