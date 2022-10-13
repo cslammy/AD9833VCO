@@ -11,6 +11,7 @@ uint16_t AD9833_init_data[6];  //initialize AD9833 buffer after resetstat
 #include "spiRP2040.h"
 #include "UART.h"
 #include "MCP3201.h"
+#include "freq2array.c"
 
 /*
 IMPORTANT
