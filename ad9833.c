@@ -85,7 +85,7 @@ void AD9833_freq_load(uint8_t freqreg, uint32_t freq)
 
            AD9833_FREQ_SPI[0] = LSB;
            AD9833_FREQ_SPI[1] = MSB;
-           printf("LSB is %x and MSB is %x \n",LSB,MSB);
+           //printf("LSB is %x and MSB is %x \n",LSB,MSB);
 }
 
 void AD9833_phase(uint8_t phasereg, uint16_t phase)

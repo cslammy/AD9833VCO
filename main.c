@@ -24,7 +24,7 @@ Pico Dev board
 
 
 const uint LED_PIN = 16; // green LED on SEEED2040
-
+uint32_t freqval = 0; // frequency we will send to AD9833, from 3201 ADC
 
 
 
@@ -59,15 +59,31 @@ SPI_TransferTx16_variable_num_words(spi0, AD9833_PHASE_SPI, 1); // initial FREQ0
 SPI_TransferTx16_variable_num_words(spi0, AD9833_CNTL_SPI, 1); // FREQ0, phase0-0, run mode
 sleep_ms(1000);
 
+//set to tri wave
 
+            AD9833_Tri();
+            CNTL_SEND; //macro to send via SPI the control uint16_t
+            sleep_ms(1000);
+            AD9833_Tri();
+            CNTL_SEND; //macro to send via SPI the control uint16_t
+            sleep_ms(1000);
 //loop dukie here
     while (2 > 0) 
     {
-    READ_UART_BUFFER; 
-    printf("%s\n",uart_buffer); 
+    //READ_UART_BUFFER; 
+    //printf("%s\n",uart_buffer); 
     
     MCPvalue = MCP3201read();
-    printf("value of MCP is %d \n",MCPvalue);
+    //printf("value of MCP is %d \n",MCPvalue);
+    sleep_us (10);
+    
+    //get value from lookup
+    freqval = freq2array_rev[MCPvalue];
+    //send this to AD9833
+    AD9833_freq_load(0,freqval);
+    SPI_TransferTx16_variable_num_words(spi0,AD9833_FREQ_SPI, 2);
+    //print em out
+    //printf("value of freq sent to AD9833 is %d \n",freqval);
     sleep_us (10);
     
  
@@ -101,7 +117,7 @@ REG  print out current freq, control, phase registers as seen by the PC
 MSB  increment F0 MSB only causing coarse frequency change
 LSB  ditto for LSB, fine frequency change.
 
-*/
+
 //next 3 ifs for test and utility
        if (UART_READ("REBOOT"))
         {
@@ -241,7 +257,7 @@ LSB  ditto for LSB, fine frequency change.
             sleep_ms(10);
             }
         }
-
+*/
 
     } //end while
 return 0;
